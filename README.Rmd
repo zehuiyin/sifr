@@ -1,0 +1,9 @@
+---
+title: "Spatial Interpolation Functions in R"
+author: "Zehui Yin"
+date: "`r Sys.Date()`"
+output:
+  md_document:
+  variant: markdown_github
+---
+

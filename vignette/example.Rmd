@@ -1,0 +1,757 @@
+---
+title: "Initial_modeling"
+author: "Zehui Yin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(sf)
+library(sp)
+library(tidyverse)
+source("geoprocessing_functions.R")
+library(arrow)
+library(lubridate)
+library(car)
+library(mapview)
+library(sfheaders)
+```
+
+# FM/LM trips at stops
+
+Load data
+
+```{r}
+metro <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Metro_Stations_in_DC.csv")
+metro <- st_as_sf(metro, coords = c("X","Y"), crs =  4326, agr = "constant")
+trips <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/SpinUpdatedData_DC_new.csv")
+trips <- trips[which(trips$Did_you_connect_with_public_transit_before_or_after_your_SPIN_trip___Yes=="Yes"),]
+trips_1 <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/SpinAllTripsJune2021&June2022_DC1.csv")
+trips_2 <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/SpinAllTripsJune2021&June2022_DC2.csv")
+trips <- rbind(trips_1, trips_2)
+metro_ent <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/DC_MetroEntrances.csv")
+metro_ent <- st_as_sf(metro_ent, coords = c("lon","lat"), crs =  4326, agr = "constant")
+```
+
+```{r}
+mapview(list(metro,metro_ent)) # ID in stops is not the same as in the entrance file
+```
+
+Create variable holder
+
+```{r}
+metro$FM100ft <- 0
+metro$FM200ft <- 0
+metro$FM300ft <- 0
+metro$LM100ft <- 0
+metro$LM200ft <- 0
+metro$LM300ft <- 0
+```
+
+Prepare metro layer
+
+```{r}
+output <- nearest_median_value(metro, metro_ent, "ID", 2248) # get mstn_ID for each stop
+metro$Stop_ID <- output$ID
+metro <- as.data.frame(metro)
+```
+
+Generate variables
+
+```{r}
+# FM100ft
+for (i in 1:nrow(trips)) {
+  if (trips$Metro100ft_FM.stop[i] != ""){
+    x <- trips$Metro100ft_FM.stop[i]
+    metro[which(metro$Stop_ID == x), "FM100ft"] <- metro[which(metro$Stop_ID == x), "FM100ft"] + 1
+  }
+}
+# FM200ft
+for (i in 1:nrow(trips)) {
+  if (trips$Metro200ft_FM.stop[i] != ""){
+    x <- trips$Metro200ft_FM.stop[i]
+    metro[which(metro$Stop_ID == x), "FM200ft"] <- metro[which(metro$Stop_ID == x), "FM200ft"] + 1
+  }
+}
+# FM300ft
+for (i in 1:nrow(trips)) {
+  if (trips$Metro300ft_FM.stop[i] != ""){
+    x <- trips$Metro300ft_FM.stop[i]
+    metro[which(metro$Stop_ID == x), "FM300ft"] <- metro[which(metro$Stop_ID == x), "FM300ft"] + 1
+  }
+}
+# LM100ft
+for (i in 1:nrow(trips)) {
+  if (trips$Metro100ft_LM.stop[i] != ""){
+    x <- trips$Metro100ft_LM.stop[i]
+    metro[which(metro$Stop_ID == x), "LM100ft"] <- metro[which(metro$Stop_ID == x), "LM100ft"] + 1
+  }
+}
+# LM200ft
+for (i in 1:nrow(trips)) {
+  if (trips$Metro200ft_LM.stop[i] != ""){
+    x <- trips$Metro200ft_LM.stop[i]
+    metro[which(metro$Stop_ID == x), "LM200ft"] <- metro[which(metro$Stop_ID == x), "LM200ft"] + 1
+  }
+}
+# LM300ft
+for (i in 1:nrow(trips)) {
+  if (trips$Metro300ft_LM.stop[i] != ""){
+    x <- trips$Metro300ft_LM.stop[i]
+    metro[which(metro$Stop_ID == x), "LM300ft"] <- metro[which(metro$Stop_ID == x), "LM300ft"] + 1
+  }
+}
+```
+
+reconvert stops to sf object
+
+```{r}
+metro <- st_as_sf(metro, sf_column_name = "geometry", crs =  4326, agr = "constant")
+```
+
+```{r}
+mapview(metro, cex = "FM200ft")
+mapview(metro, cex = "LM200ft")
+```
+
+# Some descriptive statistics
+
+```{r}
+trips$created_at_local <- as.POSIXct(trips$created_at_local, format='%Y-%m-%d %H:%M:%OS',tz='EST')
+hist(trips$created_at_local, breaks = "month", main = "Hitogram of time", xlab = "Time")
+```
+
+# E-scooter availability
+
+Load data
+
+```{r}
+scooter <- read_parquet("C:/Users/zehuiyin/Desktop/Micromobility/all_data.parquet") # only contain BirdDC and JumpDC_Bike
+scooter <- st_as_sf(scooter, coords = c("lon","lat"), crs =  4326, agr = "constant")
+```
+
+Filter to only 6 am scooters (data stored in UTC/GMT, therefore filter for 13)
+
+```{r}
+scooter <- scooter[which(hour(scooter$timestamp)==13),]
+```
+
+Projection = 2248; buffer = 300 feet
+
+```{r}
+metro_scooter <- what_within_each_stops(metro, scooter, 2248, 300) # generate what intersection falls within buffers
+metro_scooter$input_rows_within_count <- 0 # create holder to record how many intersections falls within
+for (i in 1:nrow(metro_scooter)) { # loop over stop rows
+  if(!is.na(str_to_num(i,"input_rows_within",metro_scooter))[1]){ # check whether there is intersection falls within
+    metro_scooter$input_rows_within_count[i] <- length(str_to_num(i,"input_rows_within",metro_scooter)) # record the number of intersections
+  }
+}
+metro$scoter_AVAL <- metro_scooter$input_rows_within_count
+```
+
+# Residential land use
+
+Generated in land use mix
+
+# Commercial land use
+
+Generated in land use mix
+
+# Land use mix
+
+Load data
+
+```{r}
+landuse <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Existing_Land_Use.shp")
+st_transform(landuse, crs = 4326)
+landuse <- landuse[which(st_is_valid(landuse)),] # remove invalid geometry
+```
+
+Filter to only 8 types of land use types
+
+```{r}
+landuse <- landuse[which(landuse$PRIMARYLU != "" & landuse$PRIMARYLU != "Vacant"),]
+summary(as.factor(landuse$PRIMARYLU))
+```
+
+Projection = 2248; buffer = 3000 feet
+
+```{r}
+entropy <- calculate_entropy(metro, landuse, 2248, 3000, "PRIMARYLU", FALSE)
+metro$PCT_resi <- entropy$PRIMARYLU_Residential
+metro$PCT_comm <- entropy$PRIMARYLU_Commercial
+metro$entropy <- entropy$entropy
+```
+
+# Distance to CBD
+
+Load data
+
+```{r}
+cbd <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/DDOT_Central_Business_District.shp")
+cbd <- st_transform(cbd, crs = 4326)
+```
+
+Generate distance of stops to CBD after transforming them into 2248 projection
+
+```{r}
+metro <- st_transform(metro, crs = 2248)
+cbd <- st_transform(cbd, crs = 2248)
+metro_cbd <- metro
+metro_cbd$cbd_distance <- NA
+for (i in 1:dim(metro)[1]) {
+  metro_cbd$cbd_distance[i] <- st_distance(metro[i,],cbd)
+}
+metro$cbd_dist <- metro_cbd$cbd_distance
+```
+
+# Presence of a school
+
+Load data
+
+```{r}
+school <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Public_School_Grounds.shp")
+st_transform(school, crs = 4326)
+```
+
+Projection = 2248, buffer = 300 feet
+
+```{r}
+metro_school <- what_within_each_stops(metro, school, 2248, 300)
+metro_school$input_rows_within_count <- 0 # create holder to record whether school is in the buffer
+for (i in 1:nrow(metro_school)) { # loop over stop rows
+  if(!is.na(str_to_num(i,"input_rows_within",metro_school))[1]){ # check whether there is school falls within
+    metro_school$input_rows_within_count[i] <- 1
+  }
+}
+metro$schol_pres <- metro_school$input_rows_within_count
+```
+
+# Road connectivity
+
+Load data
+
+```{r}
+int_sec <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Intersection_Points.shp")
+int_sec <- st_transform(int_sec, crs = 4326)
+```
+
+Projection = 2248; buffer = 300 feet
+
+```{r}
+metro_int_sec <- what_within_each_stops(metro, int_sec, 2248, 300) # generate what intersection falls within buffers
+metro_int_sec$input_rows_within_count <- 0 # create holder to record how many intersections falls within
+for (i in 1:nrow(metro_int_sec)) { # loop over stop rows
+  if(!is.na(str_to_num(i,"input_rows_within",metro_int_sec))[1]){ # check whether there is intersection falls within
+    metro_int_sec$input_rows_within_count[i] <- length(str_to_num(i,"input_rows_within",metro_int_sec)) # record the number of intersections
+  }
+}
+metro$Rd_conn <- metro_int_sec$input_rows_within_count
+```
+
+# Area of major roads
+
+Load data
+
+```{r}
+roads <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Roads_2019.shp")
+st_transform(roads, crs = 4326)
+roads <- roads[which(st_is_valid(roads)),] # remove invalid geometry
+```
+
+Calculate the area size of Road within 300 feet buffer
+
+```{r}
+major_roads_size <- area_in_buffer(metro, roads, 2248, 300, "DESCRIPTIO", "Road", FALSE)
+metro$mjr_Rd <- major_roads_size$DESCRIPTIO
+```
+
+# Area of minor roads
+
+Calculate the area size of Alley and Paved Drive within 300 feet buffer
+
+```{r}
+minor_roads_size <- area_in_buffer(metro, roads, 2248, 300, "DESCRIPTIO", c("Alley","Paved Drive"), FALSE)
+metro$mior_Rd <- minor_roads_size$DESCRIPTIO
+```
+
+# Length of bikeways
+
+Load data
+
+```{r}
+bikeways <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Bike_Trails.shp")
+st_transform(bikeways, crs = 4326)
+bikeways <- bikeways[which(st_is_valid(bikeways)),] # remove invalid geometry
+```
+
+Projection = 2248; buffer = 3000 feet
+
+```{r}
+bike_length <- length_in_buffer(metro, bikeways, 2248, 3000)
+metro$bike_len <- bike_length$total_length_within_buffer
+```
+
+# Traffic volume
+
+Load data
+
+```{r}
+volume <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/2018_Traffic_Volume.shp")
+st_transform(volume, crs = 4326)
+```
+
+Calculate total traffic volume within buffer, 0 indicated that some roads in the buffer has no AADT value from source data
+
+Projection = 2248; buffer = 300 feet
+
+```{r}
+metro_tra_vol <- total_volume_in_buffer(metro, volume, 2248, 300, "AADT")
+metro$traf_vol <- metro_tra_vol$total_volume_within_buffer
+```
+
+# Number of docking
+
+Load data
+
+```{r}
+bikedock <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Public_Bike_Racks.shp")
+st_transform(bikedock, crs = 4326)
+bikedock <- bikedock[which(st_is_valid(bikedock)),] # remove invalid geometry
+```
+
+Projection = 2248; buffer = 300 feet
+
+```{r}
+metro_bike_rack <- what_within_each_stops(metro, bikedock, 2248, 300) # generate what docks falls within buffers
+metro_bike_rack$input_rows_within_count <- 0 # create holder to record how many docks falls within
+for (i in 1:nrow(metro_bike_rack)) { # loop over stop rows
+  if(!is.na(str_to_num(i,"input_rows_within",metro_bike_rack))[1]){ # check whether there is docks falls within
+    metro_bike_rack$input_rows_within_count[i] <- length(str_to_num(i,"input_rows_within",metro_bike_rack)) # record the number of docks
+  }
+}
+metro$docking <- metro_bike_rack$input_rows_within_count
+```
+
+# Number of transit routes
+
+Calculate number of lines in LINE column in metro
+
+```{r}
+metro$Nroute <- 0
+for (i in 1:dim(metro)[1]) {
+  metro$Nroute[i] <- length(unlist(str_split(metro$LINE[i], ",")))
+}
+```
+
+# Transfer station
+
+Whether LINE column has two lines
+
+```{r}
+metro$transfer <- 0
+metro$transfer[which(str_detect(metro$LINE, ","))] <- 1
+```
+
+# Population density
+
+Load data
+
+```{r}
+census_tract <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/Census_Tracts_in_2020.shp")
+census_tract <- st_transform(census_tract, crs = 4326)
+```
+
+Calculate population density
+
+```{r}
+census_tract$SHAPEAREA <- st_area(census_tract)
+census_tract$pop_den <- census_tract$P0010001/census_tract$SHAPEAREA # P0010001 is the total population
+census_tract$pop_den <- as.numeric(census_tract$pop_den) # get rid of unit in the calculation
+```
+
+Projection 2248 with 300 feet buffer
+
+```{r}
+pop_den <- average_value_in_buffer(metro, census_tract, 2248, 300, "pop_den", FALSE)
+metro$pop_den <- pop_den$pop_den
+```
+
+# Employment density
+
+Load data
+
+```{r}
+census_tract <- st_read("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/tl_2020_11_tract.shp")
+census_tract <- st_transform(census_tract, crs = 4326)
+census_tract$NAME <- as.numeric(census_tract$NAME)
+employment <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/employment.csv")
+```
+
+Generate census tract name and employment count for census data
+
+```{r}
+employment <- cbind(sort(census_tract$NAME), employment[which(str_detect(employment$Label..Grouping.,"Census Tract")) + 1,6])
+employment <- as.data.frame(employment)
+employment$V1 <- as.numeric(employment$V1)
+names(employment)[2] <- "employed"
+```
+
+Join the data to the census tract
+
+```{r}
+census_tract <- as.data.frame(census_tract)
+census_tract <- left_join(census_tract, employment, by = c("NAME" = "V1"))
+```
+
+Calculate census tract area
+
+```{r}
+census_tract <- st_as_sf(census_tract, sf_column_name = "geometry", crs = 4326)
+census_tract$AREA <- st_area(census_tract)
+```
+
+Calculate employment density
+
+```{r}
+for (i in 1:nrow(census_tract)) {
+  census_tract$employed[i] <- str_remove(census_tract$employed[i], ",")
+}
+census_tract$emp_den <- as.numeric(census_tract$employed)/as.numeric(census_tract$AREA)
+```
+
+Calculate employment density within buffer 300 feet and projection = 2248
+
+```{r}
+emp_den <- average_value_in_buffer(metro, census_tract, 2248, 300, "emp_den", FALSE)
+metro$emp_den <- emp_den$emp_den
+```
+
+# Gender
+
+Load data
+
+```{r}
+gender <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/gender.csv")
+```
+
+Generate census tract name and gender ratio for census data (1 census tract only has male)
+
+```{r}
+gender <- cbind(sort(census_tract$NAME), gender[which(str_detect(gender$Label..Grouping.,"Census Tract")) + 1,6])
+gender <- as.data.frame(gender)
+gender$V1 <- as.numeric(gender$V1)
+names(gender)[2] <- "sex_ratio_male_per_100female"
+```
+
+Join the data to the census tract
+
+```{r}
+census_tract <- as.data.frame(census_tract)
+census_tract <- left_join(census_tract, gender, by = c("NAME" = "V1"))
+```
+
+Calculate census tract area
+
+```{r}
+census_tract <- st_as_sf(census_tract, sf_column_name = "geometry", crs = 4326)
+census_tract$AREA <- st_area(census_tract)
+```
+
+Calculate the average sex ratio to metro stops
+
+```{r}
+sex_ratio <- nearest_median_value(metro, census_tract, "sex_ratio_male_per_100female", 2248)
+metro$sex_ratio <- sex_ratio$sex_ratio_male_per_100female
+```
+
+# Age
+
+Load data
+
+```{r}
+age <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/gender.csv") # use the same table as in gender calculation
+```
+
+Generate census tract name and median age for census data
+
+```{r}
+age <- cbind(sort(census_tract$NAME), age[which(str_detect(age$Label..Grouping.,"Census Tract")) + 1,20])
+age <- as.data.frame(age)
+age$V1 <- as.numeric(age$V1)
+names(age)[2] <- "median_age"
+```
+
+Join the data to the census tract
+
+```{r}
+census_tract <- as.data.frame(census_tract)
+census_tract <- left_join(census_tract, age, by = c("NAME" = "V1"))
+```
+
+Calculate census tract area
+
+```{r}
+census_tract <- st_as_sf(census_tract, sf_column_name = "geometry", crs = 4326)
+census_tract$AREA <- st_area(census_tract)
+```
+
+Calculate the nearest median age to metro stops
+
+```{r}
+median_age <- nearest_median_value(metro, census_tract, "median_age", 2248)
+metro$med_age <- median_age$median_age
+```
+
+# Education attainment
+
+Load data
+
+```{r}
+edu <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/education.csv")
+```
+
+Remove "," in the numbers and unwanted rows
+
+```{r}
+edu <- edu[which(str_detect(edu$Label..Grouping.,"Census Tract")) + 2,]
+edu$name <- sort(census_tract$NAME)
+for (coln in c(3,7,8,17)) {
+  for (row in 1:nrow(edu)) {
+    edu[row,coln] <- str_remove(edu[row,coln], ",")
+  }
+}
+```
+
+Generate census tract name and percentage of bachelor's degree or higher for census data
+
+```{r}
+edu <- cbind(sort(census_tract$NAME), (as.numeric(edu[,7]) + as.numeric(edu[,17]))*100 / (as.numeric(edu[,3]) + as.numeric(edu[,8])))
+edu <- as.data.frame(edu)
+edu$V1 <- as.numeric(edu$V1)
+names(edu)[2] <- "PCT_bach_dgree_or_higher"
+```
+
+Join the data to the census tract
+
+```{r}
+census_tract <- as.data.frame(census_tract)
+census_tract <- left_join(census_tract, edu, by = c("NAME" = "V1"))
+```
+
+Calculate census tract area
+
+```{r}
+census_tract <- st_as_sf(census_tract, sf_column_name = "geometry", crs = 4326)
+census_tract$AREA <- st_area(census_tract)
+```
+
+Calculate the average percentage of bachelor's degree or higher to metro stops
+
+```{r}
+edu_percentage <- average_value_in_buffer(metro, census_tract, 2248, 3000, "PCT_bach_dgree_or_higher", FALSE)
+metro$PCT_bach_hgher <- edu_percentage$PCT_bach_dgree_or_higher
+```
+
+# Rental housing units
+
+Load data
+
+```{r}
+house <- read.csv("C:/Users/zehuiyin/Desktop/Spatial_analysis/codes/housing.csv")
+```
+
+Generate census tract name and rental housing percentage for census data (1 census tract has no house)
+
+```{r}
+house <- cbind(sort(census_tract$NAME), house[which(str_detect(house$Label..Grouping.,"Census Tract")) + 3,54])
+house <- as.data.frame(house)
+house$V1 <- as.numeric(house$V1)
+names(house)[2] <- "PCT_rental"
+for (i in 1:nrow(house)) {
+  house$PCT_rental[i] <- str_remove(house$PCT_rental[i], "%")
+}
+house$PCT_rental <- as.numeric(house$PCT_rental) # one census tract has no house
+```
+
+Join the data to the census tract
+
+```{r}
+census_tract <- as.data.frame(census_tract)
+census_tract <- left_join(census_tract, house, by = c("NAME" = "V1"))
+```
+
+Calculate census tract area
+
+```{r}
+census_tract <- st_as_sf(census_tract, sf_column_name = "geometry", crs = 4326)
+census_tract$AREA <- st_area(census_tract)
+```
+
+Calculate the average percentage of rental house around metro stops
+
+```{r}
+rental_percentage <- average_value_in_buffer(metro, census_tract, 2248, 3000, "PCT_rental", FALSE)
+metro$PCT_rent <- rental_percentage$PCT_rental
+```
+
+# Store the results
+
+```{r}
+metro_exp <- sf_to_df(metro, fill = TRUE)
+write.csv(metro_exp, file = "C:/Users/zehuiyin/Desktop/SpinAllTripsJune2021&June2022_DC.csv")
+```
+
+# Modelling
+
+```{r}
+metro <- as.data.frame(metro)
+colns <- c("FM100ft", "FM200ft", "FM300ft", "LM100ft", "LM200ft", "LM300ft", "scoter_AVAL", "PCT_resi", "PCT_comm", "entropy", "cbd_dist", "schol_pres", "Rd_conn", "mjr_Rd", "mior_Rd", "bike_len", "traf_vol", "docking", "Nroute", "transfer", "pop_den", "emp_den", "sex_ratio", "med_age", "PCT_bach_hgher", "PCT_rent")
+for (i in colns) {
+  metro[,i] <- as.numeric(metro[,i])
+}
+
+par(mfrow = c(2,3))
+hist(metro$FM100ft)
+hist(metro$FM200ft)
+hist(metro$FM300ft)
+hist(metro$LM100ft)
+hist(metro$LM200ft)
+hist(metro$LM300ft)
+```
+
+```{r}
+m1 <- lm(FM100ft ~ scoter_AVAL +
+           PCT_resi +
+           PCT_comm +
+           entropy +
+           cbd_dist +
+           schol_pres +
+           Rd_conn +
+           mjr_Rd +
+           mior_Rd +
+           bike_len +
+           traf_vol +
+           docking +
+           Nroute +
+           transfer +
+           pop_den +
+           emp_den +
+           sex_ratio +
+           med_age +
+           PCT_bach_hgher +
+           PCT_rent, data = metro)
+summary(m1)
+vif(m1)
+m1 <- lm(FM200ft ~ scoter_AVAL +
+           PCT_resi +
+           PCT_comm +
+           entropy +
+           cbd_dist +
+           schol_pres +
+           Rd_conn +
+           mjr_Rd +
+           mior_Rd +
+           bike_len +
+           traf_vol +
+           docking +
+           Nroute +
+           transfer +
+           pop_den +
+           emp_den +
+           sex_ratio +
+           med_age +
+           PCT_bach_hgher +
+           PCT_rent, data = metro)
+summary(m1)
+vif(m1)
+m1 <- lm(FM300ft ~ scoter_AVAL +
+           PCT_resi +
+           PCT_comm +
+           entropy +
+           cbd_dist +
+           schol_pres +
+           Rd_conn +
+           mjr_Rd +
+           mior_Rd +
+           bike_len +
+           traf_vol +
+           docking +
+           Nroute +
+           transfer +
+           pop_den +
+           emp_den +
+           sex_ratio +
+           med_age +
+           PCT_bach_hgher +
+           PCT_rent, data = metro)
+summary(m1)
+vif(m1)
+m1 <- lm(LM100ft ~ scoter_AVAL +
+           PCT_resi +
+           PCT_comm +
+           entropy +
+           cbd_dist +
+           schol_pres +
+           Rd_conn +
+           mjr_Rd +
+           mior_Rd +
+           bike_len +
+           traf_vol +
+           docking +
+           Nroute +
+           transfer +
+           pop_den +
+           emp_den +
+           sex_ratio +
+           med_age +
+           PCT_bach_hgher +
+           PCT_rent, data = metro)
+summary(m1)
+vif(m1)
+m1 <- lm(LM200ft ~ scoter_AVAL +
+           PCT_resi +
+           PCT_comm +
+           entropy +
+           cbd_dist +
+           schol_pres +
+           Rd_conn +
+           mjr_Rd +
+           mior_Rd +
+           bike_len +
+           traf_vol +
+           docking +
+           Nroute +
+           transfer +
+           pop_den +
+           emp_den +
+           sex_ratio +
+           med_age +
+           PCT_bach_hgher +
+           PCT_rent, data = metro)
+summary(m1)
+vif(m1)
+m1 <- lm(LM300ft ~ scoter_AVAL +
+           PCT_resi +
+           PCT_comm +
+           entropy +
+           cbd_dist +
+           schol_pres +
+           Rd_conn +
+           mjr_Rd +
+           mior_Rd +
+           bike_len +
+           traf_vol +
+           docking +
+           Nroute +
+           transfer +
+           pop_den +
+           emp_den +
+           sex_ratio +
+           med_age +
+           PCT_bach_hgher +
+           PCT_rent, data = metro)
+summary(m1)
+vif(m1)
+```
