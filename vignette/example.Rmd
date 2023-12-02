@@ -132,7 +132,7 @@ summary(as.factor(landuse$Class_name))
 ```
 
 ```{r}
-entropy <- calculate_entropy(schools, landuse, 26918, 3000, "Class_name", FALSE)
+entropy <- calculate_entropy(schools, landuse, 26918, 300, "Class_name", FALSE)
 
 schools$PCT_resi <- entropy$Class_name_ApartmentNeighbourhoods
 schools$PCT_comm <- entropy$Class_name_CoreEmploymentAreas
