@@ -10,12 +10,14 @@ output: html_document
 ```{r include=FALSE}
 library(devtools)
 devtools::document()
+library(sf)
 library(mapview)
 ```
 
 ```{r eval=FALSE}
 # load packages used in this example
 library(sifr)
+library(sf)
 library(mapview)
 ```
 
