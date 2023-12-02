@@ -1,0 +1,3 @@
+census_data.rds
+Statistics Canada, 2021 Canadian Census data
+Downloaded using cancensus package
