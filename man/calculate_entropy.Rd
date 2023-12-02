@@ -2,9 +2,7 @@
 % Please edit documentation in R/spatial_interpolation_functions.R
 \name{calculate_entropy}
 \alias{calculate_entropy}
-\title{Calculate land use entropy for a certain buffer area
-Below are the formula used in this function to calculate entropy value
-$$Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}$$}
+\title{Calculate land use entropy for a certain buffer area}
 \usage{
 calculate_entropy(
   stops,
@@ -33,8 +31,11 @@ a point layer based on stops containing the entropy value for each stop
 }
 \description{
 Calculate land use entropy for a certain buffer area
-Below are the formula used in this function to calculate entropy value
-$$Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}$$
+}
+\details{
+The formula used in this function to calculate entropy value is
+\eqn{ Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}
+}{ASCII}
 }
 \author{
 Zehui Yin, \email{zehuiyin@gmail.com}

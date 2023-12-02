@@ -5,6 +5,8 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+# Intro
+
 ```{r include=FALSE}
 library(devtools)
 devtools::document()
@@ -22,9 +24,9 @@ sociodemographic and built environment variables are calculated for a small
 random sample of schools in Toronto. Throughout this example, I used projection
 NAD83 / UTM zone 18N.
 
-# All types of School Locations in Toronto
+# Load data
 
-Load data
+All types of School Locations in Toronto
 
 ```{r}
 # school locations in Toronto
@@ -40,6 +42,8 @@ schools <- schools[sample(1:nrow(schools), 30),]
 
 mapview(schools)
 ```
+
+Some variables of interest
 
 ```{r}
 # road intersections in Toronto
@@ -60,7 +64,7 @@ landuse <- st_read("./../extdata/landuse.shp")
 mapview(landuse, zcol="Class_name")
 ```
 
-# Calculate Number of Intersections within different buffers
+# Calculate Number of Intersections within 300-meter buffers of the schools
 
 ```{r}
 # generate what intersection falls within 300 meter buffers
@@ -79,7 +83,7 @@ schools$Rd_conn <- school_int_sec$input_rows_within_count
 mapview(schools, cex = "Rd_conn")
 ```
 
-# Calculate Length of Roads
+# Calculate Length of Roads within 300-meter buffers of the schools
 
 ```{r}
 # generate what intersection falls within 300 meter buffers
@@ -89,7 +93,7 @@ schools$road_len <- road_length$total_length_within_buffer
 mapview(schools, cex = "road_len")
 ```
 
-# Calculate Average Population Density
+# Calculate Average Population Density within 300-meter buffers of the schools
 
 ```{r}
 # get rid of the long name
@@ -103,7 +107,7 @@ schools$pop_den <- pop_den$pop_den
 mapview(schools, cex = "pop_den")
 ```
 
-# Assign the nearest Census Tract's Population Density (for median values)
+# Assign the nearest Census Tract's Population Density to the schools
 
 ```{r}
 pop_den_median <- nearest_median_value(schools, census_data, "pop_den", 26918)
@@ -113,7 +117,9 @@ schools$pop_den_median <- pop_den$pop_den
 mapview(schools, cex = "pop_den_median")
 ```
 
-# Calculate land use mix
+# Calculate land use mix (entropy) within 300-meter buffers of the schools
+
+$$Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}$$
 
 Filter to only 4 types of land use types (reduce computing time for illustration purposes).
 
