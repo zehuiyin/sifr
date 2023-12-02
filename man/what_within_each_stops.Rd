@@ -21,6 +21,6 @@ a point layer based on stops with one extra column contains the results
 \description{
 Calculate what rows of input layer fall within every stops buffer area
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

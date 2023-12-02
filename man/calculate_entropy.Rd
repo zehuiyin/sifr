@@ -36,6 +36,6 @@ Calculate land use entropy for a certain buffer area
 Below are the formula used in this function to calculate entropy value
 $$Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}$$
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

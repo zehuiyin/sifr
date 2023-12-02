@@ -32,6 +32,6 @@ a point layer based on stops with one extra column contains the results
 \description{
 Calculate average demographic value that are within certain buffer of stops
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

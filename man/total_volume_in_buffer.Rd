@@ -23,6 +23,6 @@ a polygon layer based on stops buffer with extra columns contain the results
 \description{
 Calculate total traffic volume within stop buffer areas
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

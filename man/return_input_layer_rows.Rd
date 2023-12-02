@@ -21,6 +21,6 @@ rows from input_layer based on the numeric row number just generated
 \description{
 Retrieve rows from input layer with what_within_each_stops result
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

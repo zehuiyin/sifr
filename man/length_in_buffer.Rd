@@ -21,6 +21,6 @@ a polygon layer based on stops buffer with extra columns contain the results
 \description{
 Calculate length of input layer that are within certain buffer of stops
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

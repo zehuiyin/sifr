@@ -19,6 +19,6 @@ the numeric row number
 \description{
 Convert "input_rows_within" from string to numeric
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

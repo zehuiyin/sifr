@@ -35,6 +35,6 @@ a polygon layer based on stops buffer with extra columns contain the results
 \description{
 Calculate area size of certain type that are within certain buffer of stops
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

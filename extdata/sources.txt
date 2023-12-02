@@ -1,0 +1,8 @@
+toronto_schools.gpkg
+Downloaded from: https://open.toronto.ca/dataset/school-locations-all-types/
+
+centreline_intersection.gpkg
+Downloaded from: https://open.toronto.ca/dataset/intersection-file-city-of-toronto/
+
+centreline.gpkg
+Downloaded from: https://open.toronto.ca/dataset/toronto-centreline-tcl/

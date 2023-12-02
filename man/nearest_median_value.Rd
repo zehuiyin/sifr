@@ -21,6 +21,6 @@ a point layer based on stops with one extra column contains the results
 \description{
 Calculate median demographic value that are nearest to stops
 }
-\examples{
-...
+\author{
+Zehui Yin, \email{zehuiyin@gmail.com}
 }

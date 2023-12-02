@@ -1,8 +1,6 @@
-library(sf)
-library(sp)
-library(tidyverse)
-
 #' Calculate what rows of input layer fall within every stops buffer area
+#'
+#' @name what_within_each_stops
 #'
 #' @param stops an point layer
 #' @param input_layer an polygon layer
@@ -10,9 +8,15 @@ library(tidyverse)
 #' @param buffer_length an single numeric value (note: the unit is based purely on the projection)
 #'
 #' @return a point layer based on stops with one extra column contains the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 what_within_each_stops <- function(stops, input_layer, proj, buffer_length){
   stops <- st_transform(stops, crs = proj) # reproject stops
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layers
@@ -35,14 +39,22 @@ what_within_each_stops <- function(stops, input_layer, proj, buffer_length){
 
 #' Convert "input_rows_within" from string to numeric
 #'
+#' @name str_to_num
+#'
 #' @param row a single numeric value of the stop row
 #' @param column the character of the column name that stores the intersect result; if using the result from the previous function, then it should be "input_rows_within"
 #' @param dataframe the name of the dataframe that store the result
 #'
 #' @return the numeric row number
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 str_to_num <- function(row, column, dataframe){
   output <- as.numeric(unlist(str_split(st_drop_geometry(dataframe[row,c(column)]),","))) # convert string to numeric by splitting with comma
   return(output) # return output
@@ -50,15 +62,23 @@ str_to_num <- function(row, column, dataframe){
 
 #' Retrieve rows from input layer with what_within_each_stops result
 #'
+#' @name return_input_layer_rows
+#'
 #' @param row a single numeric value of the stop row
 #' @param column the character of the column name that stores the intersect result; if using the result from the previous function, then it should be "input_rows_within"
 #' @param inter_stops the name of the sf object and dataframe that store the intersect result
 #' @param input_layer an polygon layer which you intersect with stops layer
 #'
 #' @return rows from input_layer based on the numeric row number just generated
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 return_input_layer_rows <- function(row, column, inter_stops, input_layer){
   output <- as.numeric(unlist(str_split(st_drop_geometry(inter_stops[row,c(column)]),","))) # convert string to numeric by splitting with comma
   return(input_layer[str_to_list(row,column,inter_stops),]) # return input_layer rows based on the numeric row number just generated
@@ -66,15 +86,23 @@ return_input_layer_rows <- function(row, column, inter_stops, input_layer){
 
 #' Calculate median demographic value that are nearest to stops
 #'
+#' @name nearest_median_value
+#'
 #' @param stops a point layer
 #' @param input_layer an polygon layer
 #' @param column the character name of the column that you want to calculate in input_layer
 #' @param proj numeric ESPG number of projection
 #'
 #' @return a point layer based on stops with one extra column contains the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 nearest_median_value <- function(stops, input_layer, column, proj){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -93,6 +121,8 @@ nearest_median_value <- function(stops, input_layer, column, proj){
 
 #' Calculate average demographic value that are within certain buffer of stops
 #'
+#' @name average_value_in_buffer
+#'
 #' @param stops a point layer
 #' @param input_layer an polygon layer
 #' @param proj numeric ESPG number of projection
@@ -101,9 +131,15 @@ nearest_median_value <- function(stops, input_layer, column, proj){
 #' @param NA_omit TRUE or FALSE; whether omit NA value in the column that you want to calculate
 #'
 #' @return a point layer based on stops with one extra column contains the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 average_value_in_buffer <- function(stops, input_layer, proj, buffer_length, column, NA_omit = FALSE){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -145,6 +181,8 @@ average_value_in_buffer <- function(stops, input_layer, proj, buffer_length, col
 
 #' Calculate total demographic value that are within certain buffer of stops
 #'
+#' @name total_value_in_buffer
+#'
 #' @param stops a point layer
 #' @param input_layer an polygon layer
 #' @param proj numeric ESPG number of projection
@@ -153,9 +191,15 @@ average_value_in_buffer <- function(stops, input_layer, proj, buffer_length, col
 #' @param NA_omit TRUE or FALSE; whether omit NA value in the column that you want to calculate
 #'
 #' @return a polygon layer based on stops buffer with extra columns contain the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 total_value_in_buffer <- function(stops, input_layer, proj, buffer_length, column, NA_omit = FALSE){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -196,6 +240,8 @@ total_value_in_buffer <- function(stops, input_layer, proj, buffer_length, colum
 
 #' Calculate percentage of area type that are within certain buffer of stops
 #'
+#' @name area_pct_in_buffer
+#'
 #' @param stops a point layer
 #' @param input_layer an polygon layer
 #' @param proj numeric ESPG number of projection
@@ -205,9 +251,15 @@ total_value_in_buffer <- function(stops, input_layer, proj, buffer_length, colum
 #' @param NA_omit TRUE or FALSE; whether omit NA value in the column that you want to calculate
 #'
 #' @return a polygon layer based on stops buffer with extra columns contain the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 area_pct_in_buffer <- function(stops, input_layer, proj, buffer_length, column, type, NA_omit = FALSE){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -251,6 +303,8 @@ area_pct_in_buffer <- function(stops, input_layer, proj, buffer_length, column, 
 
 #' Calculate area size of certain type that are within certain buffer of stops
 #'
+#' @name area_in_buffer
+#'
 #' @param stops a point layer
 #' @param input_layer an polygon layer
 #' @param proj numeric ESPG number of projection
@@ -260,9 +314,15 @@ area_pct_in_buffer <- function(stops, input_layer, proj, buffer_length, column, 
 #' @param NA_omit TRUE or FALSE; whether omit NA value in the column that you want to calculate
 #'
 #' @return a polygon layer based on stops buffer with extra columns contain the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 area_in_buffer <- function(stops, input_layer, proj, buffer_length, column, type, NA_omit = FALSE){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -305,15 +365,23 @@ area_in_buffer <- function(stops, input_layer, proj, buffer_length, column, type
 
 #' Calculate length of input layer that are within certain buffer of stops
 #'
+#' @name length_in_buffer
+#'
 #' @param stops a point layer
 #' @param input_layer an polyline layer
 #' @param proj numeric ESPG number of projection
 #' @param buffer_length an single numeric value (note: the unit is based purely on the projection)
 #'
 #' @return a polygon layer based on stops buffer with extra columns contain the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 length_in_buffer <- function(stops, input_layer, proj, buffer_length){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -355,6 +423,8 @@ length_in_buffer <- function(stops, input_layer, proj, buffer_length){
 #' Below are the formula used in this function to calculate entropy value
 #' $$Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}$$
 #'
+#' @name calculate_entropy
+#'
 #' @param stops a point layer
 #' @param input_layer an polygon layer
 #' @param proj numeric ESPG number of projection
@@ -363,9 +433,15 @@ length_in_buffer <- function(stops, input_layer, proj, buffer_length){
 #' @param exclude_intermediate whether to exclude intermediate land use area percentage results in the output
 #'
 #' @return a point layer based on stops containing the entropy value for each stop
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 calculate_entropy <- function(stops, input_layer, proj, buffer_length, column, exclude_intermediate = TRUE){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
@@ -404,6 +480,8 @@ calculate_entropy <- function(stops, input_layer, proj, buffer_length, column, e
 
 #' Calculate total traffic volume within stop buffer areas
 #'
+#' @name total_volume_in_buffer
+#'
 #' @param stops a point layer
 #' @param input_layer an polyline layer
 #' @param proj numeric ESPG number of projection
@@ -411,9 +489,15 @@ calculate_entropy <- function(stops, input_layer, proj, buffer_length, column, e
 #' @param column character column name that contains traffic volume
 #'
 #' @return a polygon layer based on stops buffer with extra columns contain the results
+#'
+#' @import sf
+#' @import sp
+#' @import tidyverse
+#'
+#' @author Zehui Yin, \email{zehuiyin@gmail.com}
+#'
 #' @export
 #'
-#' @examples ...
 total_volume_in_buffer <- function(stops, input_layer, proj, buffer_length, column){
   stops <- st_transform(stops, crs = proj) # reproject stops layer
   input_layer <- st_transform(input_layer, crs = proj) # reproject input layer
