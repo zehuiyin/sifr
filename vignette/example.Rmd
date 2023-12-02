@@ -8,7 +8,6 @@ output: html_document
 # Vignette
 
 ```{r setup}
-# load packages used in this post
 library(sifr)
 library(mapview)
 ```
@@ -102,4 +101,8 @@ pop_den_median <- nearest_median_value(schools, census_data, "pop_den", 26918)
 schools$pop_den_median <- pop_den$pop_den
 
 mapview(schools, cex = "pop_den_median")
+```
+
+```{r eval=FALSE, include=FALSE}
+rmarkdown::render("./example.Rmd")
 ```

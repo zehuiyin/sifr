@@ -13,11 +13,13 @@ You can install `sifr` from [GitHub](https://github.com/) with:
 
 ``` r
 if(!require(devtools)){
-    install.packages("devtools")
-    library(devtools)
+  install.packages("devtools")
+  library(devtools)
 }
 
 devtools::install_github("zehuiyin/sifr")
+
+library(sifr)
 ```
 
 # Example Usage
