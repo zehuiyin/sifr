@@ -5,16 +5,14 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-# Vignette
-
 ```{r include=FALSE}
 library(devtools)
-load_all("./../")
-library(tidyverse)
+devtools::document()
 library(mapview)
 ```
 
 ```{r eval=FALSE}
+# load packages used in this example
 library(sifr)
 library(mapview)
 ```

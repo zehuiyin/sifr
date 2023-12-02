@@ -11,7 +11,7 @@
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -49,7 +49,7 @@ what_within_each_stops <- function(stops, input_layer, proj, buffer_length){
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -73,7 +73,7 @@ str_to_num <- function(row, column, dataframe){
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -97,7 +97,7 @@ return_input_layer_rows <- function(row, column, inter_stops, input_layer){
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -134,7 +134,7 @@ nearest_median_value <- function(stops, input_layer, column, proj){
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -194,7 +194,7 @@ average_value_in_buffer <- function(stops, input_layer, proj, buffer_length, col
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -254,7 +254,7 @@ total_value_in_buffer <- function(stops, input_layer, proj, buffer_length, colum
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -317,7 +317,7 @@ area_pct_in_buffer <- function(stops, input_layer, proj, buffer_length, column, 
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -376,7 +376,7 @@ area_in_buffer <- function(stops, input_layer, proj, buffer_length, column, type
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -436,7 +436,7 @@ length_in_buffer <- function(stops, input_layer, proj, buffer_length){
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'
@@ -492,7 +492,7 @@ calculate_entropy <- function(stops, input_layer, proj, buffer_length, column, e
 #'
 #' @import sf
 #' @import sp
-#' @import tidyverse
+#' @import stringr
 #'
 #' @author Zehui Yin, \email{zehuiyin@gmail.com}
 #'

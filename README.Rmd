@@ -25,4 +25,4 @@ devtools::install_github("zehuiyin/sifr")
 
 # Example Usage
 
-You can find an example regression analysis using this package here: [Vignette](https://zehuiyin.github.io/sifr.html).
+You can find an example regression analysis using this package here: [Vignette](https://zehuiyin.github.io/sifr/).
