@@ -117,9 +117,9 @@ schools$pop_den_median <- pop_den$pop_den
 mapview(schools, cex = "pop_den_median")
 ```
 
-# Calculate land use mix (entropy) within 300-meter buffers of the schools
+# Calculate land use mix (entropy) within 3000-meter buffers of the schools
 
-$$Entropy = -\sum_{k=1}^nP_k*\frac{ln(P_k)}{ln(n)}$$
+$$Entropy = -\sum_{k=1}^nP_k\times\frac{ln(P_k)}{ln(n)}$$
 
 Filter to only 4 types of land use types (reduce computing time for illustration purposes).
 
@@ -132,7 +132,7 @@ summary(as.factor(landuse$Class_name))
 ```
 
 ```{r}
-entropy <- calculate_entropy(schools, landuse, 26918, 300, "Class_name", FALSE)
+entropy <- calculate_entropy(schools, landuse, 26918, 3000, "Class_name", FALSE)
 
 schools$PCT_resi <- entropy$Class_name_ApartmentNeighbourhoods
 schools$PCT_comm <- entropy$Class_name_CoreEmploymentAreas
