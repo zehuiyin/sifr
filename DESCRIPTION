@@ -8,8 +8,13 @@ Maintainer: Zehui Yin <zehuiyin@gmail.com>
 Description: Package sifr contains functions for spatial interpolation of sociodemographic and built-environment variables. These functions are designed to be utilized on point data,    
     particularly to compute variables for subway station locations. These variables can then be employed as inputs for cluster analysis or econometric analysis. Although primarily    
     intended for subway station data, it is possible that these functions could function on other data types as well.
+Depends: 
+  R (>= 4.2.3)
 License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
-Imports: sf, sp, stringr
+Imports: 
+  sf (>= 1.0-14),
+  sp (>= 2.1-2), 
+  stringr (>= 1.5.1)
