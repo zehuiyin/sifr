@@ -2,6 +2,7 @@ Package: sifr
 Type: Package
 Title: Spatial Interpolation in R
 Version: 0.1.0
+Date: 2023-12-3
 Author: Zehui Yin
 Maintainer: Zehui Yin <zehuiyin@gmail.com>
 Description: Package sifr contains functions for spatial interpolation of sociodemographic and built-environment variables. These functions are designed to be utilized on point data,    
@@ -11,3 +12,4 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Imports: sf, sp, stringr
