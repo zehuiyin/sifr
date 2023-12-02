@@ -7,14 +7,22 @@ output: html_document
 
 # Vignette
 
-```{r setup}
+```{r include=FALSE}
+library(devtools)
+load_all("./../")
+library(tidyverse)
+library(mapview)
+```
+
+```{r eval=FALSE}
 library(sifr)
 library(mapview)
 ```
 
 In this example, I provided some example usage for the `sifr` package. Some 
 sociodemographic and built environment variables are calculated for a small 
-random sample of schools in Toronto.
+random sample of schools in Toronto. Throughout this example, I used projection
+NAD83 / UTM zone 18N.
 
 # All types of School Locations in Toronto
 
@@ -48,6 +56,10 @@ st_geometry(roads) <- "geometry"
 
 # 2021 Canadian census data
 census_data <- readRDS("./../data/census_data.rds")
+
+# land use data in Toronto
+landuse <- st_read("./../extdata/landuse.shp")
+mapview(landuse, zcol="Class_name")
 ```
 
 # Calculate Number of Intersections within different buffers
@@ -103,6 +115,30 @@ schools$pop_den_median <- pop_den$pop_den
 mapview(schools, cex = "pop_den_median")
 ```
 
+# Calculate land use mix
+
+Filter to only 4 types of land use types (reduce computing time for illustration purposes).
+
+```{r}
+landuse <- landuse[which(landuse$Class_name %in% c("ApartmentNeighbourhoods",
+                                                   "CoreEmploymentAreas",
+                                                   "Natural areas",
+                                                   "Institutional")),]
+summary(as.factor(landuse$Class_name))
+```
+
+```{r}
+entropy <- calculate_entropy(schools, landuse, 26918, 3000, "Class_name", FALSE)
+
+schools$PCT_resi <- entropy$Class_name_ApartmentNeighbourhoods
+schools$PCT_comm <- entropy$Class_name_CoreEmploymentAreas
+schools$entropy <- entropy$entropy
+
+mapview(schools, zcol = "entropy")
+```
+
 ```{r eval=FALSE, include=FALSE}
-rmarkdown::render("./example.Rmd")
+rmarkdown::render("./example.Rmd", 
+                  output_file = "index.html", 
+                  output_dir = "./../docs")
 ```

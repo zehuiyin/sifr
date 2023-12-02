@@ -6,3 +6,6 @@ Downloaded from: https://open.toronto.ca/dataset/intersection-file-city-of-toron
 
 centreline.gpkg
 Downloaded from: https://open.toronto.ca/dataset/toronto-centreline-tcl/
+
+landuse.shp
+Downloaded from: https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/1VMJAG
