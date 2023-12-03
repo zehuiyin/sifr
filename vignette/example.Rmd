@@ -39,7 +39,7 @@ st_geometry(schools) <- "geometry"
 # for reproductivity
 set.seed(123)
 
-# take a random 30 sample to simplify calculation as this is just a example
+# take a random 30 sample to simplify calculation as this is just an example
 schools <- schools[sample(1:nrow(schools), 30),]
 
 mapview(schools)
