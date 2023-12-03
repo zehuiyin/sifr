@@ -28,12 +28,12 @@ functionality of the package here:
 
 # How to cite
 
-Yin, Z. (2023). Spatial Interpolation Functions in R.
+Yin, Z. (2023). sifr: Spatial Interpolation Functions in R.
 <https://github.com/zehuiyin/sifr>
 
 ``` latex
 @Manual{sifr,
-  title = {Spatial Interpolation Functions in R},
+  title = {sifr: Spatial Interpolation Functions in R},
   author = {Zehui Yin},
   year = {2023},
   note = {R package version 0.1.0},
