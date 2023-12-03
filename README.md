@@ -1,5 +1,5 @@
 
-# R Package *sifr*
+# R Package `sifr`
 
 Spatial Interpolation Functions in R
 
@@ -9,7 +9,7 @@ Spatial Interpolation Functions in R
 
 # Installation
 
-You can install *sifr* from [GitHub](https://github.com/) with:
+You can install `sifr` from [GitHub](https://github.com/) with:
 
 ``` r
 if(!require(devtools)){
@@ -22,7 +22,8 @@ devtools::install_github("zehuiyin/sifr")
 
 # Example Usage
 
-You can find an example regression analysis using this package here:
+You can find a short example that demonstrates some of the core
+functionality of the package here:
 [Vignette](https://zehuiyin.github.io/sifr/).
 
 # How to cite
