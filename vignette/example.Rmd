@@ -21,7 +21,7 @@ library(sf)
 library(mapview)
 ```
 
-In this example, I provided some example usage for the `sifr` package. Some 
+In this illustration, I provided some example usage for the `sifr` package. Some 
 sociodemographic and built environment variables are calculated for a small 
 random sample of schools in Toronto. Throughout this example, I used projection
 NAD83 / UTM zone 18N.
@@ -32,8 +32,8 @@ All types of School Locations in Toronto
 
 ```{r}
 # school locations in Toronto
-schools <- st_read("./../extdata/toronto_schools.gpkg")
-# to force the geometry column to name geometry
+schools <- st_read("./../extdata/toronto_schools.gpkg", quiet = T)
+# force the geometry column to name geometry
 st_geometry(schools) <- "geometry"
 
 # for reproductivity
@@ -47,22 +47,22 @@ mapview(schools)
 
 Some variables of interest
 
-```{r}
+```{r message=FALSE}
 # road intersections in Toronto
-intersections <- st_read("./../extdata/centreline_intersection.gpkg")
-# to force the geometry column to name geometry
+intersections <- st_read("./../extdata/centreline_intersection.gpkg", quiet = T)
+# force the geometry column to name geometry
 st_geometry(intersections) <- "geometry"
 
 # road centrelines in Toronto
-roads <- st_read("./../extdata/centreline.gpkg")
-# to force the geometry column to name geometry
+roads <- st_read("./../extdata/centreline.gpkg", quiet = T)
+# force the geometry column to name geometry
 st_geometry(roads) <- "geometry"
 
 # 2021 Canadian census data
 census_data <- readRDS("./../data/census_data.rds")
 
 # land use data in Toronto
-landuse <- st_read("./../extdata/landuse.shp")
+landuse <- st_read("./../extdata/landuse.shp", quiet = T)
 mapview(landuse, zcol="Class_name")
 ```
 
