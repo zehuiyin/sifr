@@ -24,7 +24,7 @@ library(mapview)
 In this illustration, I provided some example usage for the `sifr` package. Some 
 sociodemographic and built environment variables are calculated for a small 
 random sample of schools in Toronto. Throughout this example, I used projection
-NAD83 / UTM zone 18N.
+NAD83 / UTM zone 18N (EPSG:26918).
 
 # Load data
 
@@ -47,7 +47,7 @@ mapview(schools)
 
 Some variables of interest
 
-```{r message=FALSE}
+```{r}
 # road intersections in Toronto
 intersections <- st_read("./../extdata/centreline_intersection.gpkg", quiet = T)
 # force the geometry column to name geometry
